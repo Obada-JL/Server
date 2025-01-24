@@ -8,6 +8,8 @@ const storage = multer.diskStorage({
       file.fieldname === "finishedStudentImage"
     ) {
       cb(null, "uploads/studentsImages");
+    } else if (file.fieldname === "newsImage") {
+      cb(null, "uploads/newsImages");
     } else if (
       file.fieldname === "courseMainImage" ||
       file.fieldname === "courseImages"
@@ -29,7 +31,10 @@ const storage = multer.diskStorage({
     if (file.fieldname === "studentImage") {
       cb(null, `${req.body.name}-${file.fieldname}${ext}`);
     } else if (file.fieldname === "finishedStudentImage") {
-      cb(null, `${req.body.name}-${file.fieldname}${ext}`);
+      cb(null, `${file.originalname}-${file.fieldname}${ext}`);
+    } else if (file.fieldname === "newsImage") {
+      const safeFileName = `news-${Date.now()}${ext}`;
+      cb(null, safeFileName);
     } else if (file.fieldname === "courseImages") {
       cb(null, `${req.body.mainTitle}-${file.fieldname}${ext}`);
     } else if (file.fieldname === "courseMainImage") {
@@ -83,6 +88,16 @@ const courseUpload = multer({
   fileFilter: fileFilter,
   // limits: { fileSize: 5 * 1024 * 1024 },
 }).fields([{ name: "courseMainImage", maxCount: 1 }, { name: "courseImages" }]);
+const newsUpload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+}).fields([
+  { name: "newsImage", maxCount: 1 },
+  { name: "newsTitle" },
+  { name: "newsDate" },
+  { name: "newsCategory" },
+  { name: "newsDescription" },
+]);
 
 module.exports = {
   studentUpload,
@@ -90,4 +105,5 @@ module.exports = {
   categoryUpload,
   courseUpload,
   FinishedStudentUpload,
+  newsUpload,
 };

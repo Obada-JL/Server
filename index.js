@@ -12,12 +12,14 @@ const CategorysController = require("./controllers/categorys-controller");
 const CoursesController = require("./controllers/courses-controller");
 const UsersController = require("./controllers/users-controller");
 const MessagesController = require("./controllers/messages-controller");
+const NewsController = require("./controllers/news-controller");
 const {
   studentUpload,
   productUpload,
   categoryUpload,
   courseUpload,
   FinishedStudentUpload,
+  newsUpload,
 } = require("./upload");
 const verifyToken = require("./verifyToken");
 const app = express();
@@ -63,6 +65,10 @@ app.use(
   "/categoryImages",
   express.static(path.join(__dirname, "uploads/categoryImages"))
 );
+app.use(
+  "/newsImages",
+  express.static(path.join(__dirname, "uploads/newsImages"))
+);
 
 mongoose
   .connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -75,6 +81,7 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Add this line to parse form data
 
 //students route
 app.get("/api/getStudents", StudentsController.getStudents);
@@ -125,6 +132,11 @@ app.get("/api/getCourse/:id", CoursesController.getCourse);
 app.post("/api/addCourse", courseUpload, CoursesController.addCourse);
 app.put("/api/updateCourse/:id", courseUpload, CoursesController.updateCourse);
 app.delete("/api/deleteCourse/:id", CoursesController.deleteCourse);
+// News routes
+app.get("/api/getNews", NewsController.getNews);
+app.post("/api/addNews", newsUpload, NewsController.addNew);
+app.put("/api/updateNews/:id", newsUpload, NewsController.updateNew);
+app.delete("/api/deleteNews/:id", NewsController.deleteNew);
 // Messages routes
 app.get("/api/getMessages", MessagesController.getAllMessages);
 app.post("/api/addMessage", MessagesController.createMessage);
