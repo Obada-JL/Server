@@ -4,12 +4,7 @@ const getCourses = async (req, res) => {
   const getCourses = await Courses.find();
   res.json(getCourses);
 };
-// const getCourse = async (req, res) => {
-//   const { id } = req.params;
-//   const course = await Courses.findById(id);
-//   console.log(course);
-//   res.json(course);
-// };
+
 const getCourse = async (req, res) => {
   try {
     const { id } = req.params; // Extract _id from the request parameters
@@ -38,59 +33,101 @@ const getCourse = async (req, res) => {
 };
 
 const addCourse = async (req, res) => {
-  const courseImages = req.files["courseImages"]
-    ? req.files["courseImages"].map((file) => file.filename)
-    : [];
-  console.log(req.files["courseImages"]);
-  const courseMainImage = req.files["courseMainImage"]
-    ? req.files["courseMainImage"][0].filename
-    : null;
-  const { mainTitle, videos, videosTitles, games, gameTitles, courseField } =
-    req.body;
-  const newCourse = new Courses({
-    mainTitle,
-    videos,
-    courseField,
-    courseMainImage,
-    courseImages,
-    videosTitles,
-    games,
-    gameTitles,
-  });
   try {
-    await newCourse.save();
-    res.status(201).json({ data: { project: newCourse } });
+    console.log("Received files:", req.files);
+    console.log("Received body:", req.body);
+
+    const courseMainImage = req.files["courseMainImage"]?.[0]?.filename || null;
+    const courseImages =
+      req.files["courseImages"]?.map((file) => file.filename) || [];
+
+    // Parse videos and games from the request body
+    const videos = req.body.videos ? JSON.parse(req.body.videos) : [];
+    const games = req.body.games ? JSON.parse(req.body.games) : [];
+
+    const newCourse = new Courses({
+      courseMainImage,
+      courseImages,
+      mainTitle: {
+        en: req.body.mainTitle_en || "",
+        ar: req.body.mainTitle_ar || "",
+      },
+      courseField: {
+        en: req.body.courseField_en || "",
+        ar: req.body.courseField_ar || "",
+      },
+      description: {
+        en: req.body.description_en || "",
+        ar: req.body.description_ar || "",
+      },
+      videos,
+      games,
+    });
+
+    const savedCourse = await newCourse.save();
+    console.log("Saved course:", savedCourse);
+    res.status(201).json(savedCourse);
   } catch (e) {
-    return res.status(400).json({ error: e });
+    console.error("Error adding course:", e);
+    res.status(400).json({ error: e.message });
   }
 };
+
 const updateCourse = async (req, res) => {
-  const courseImages = req.files["courseImages"]
-    ? req.files["courseImages"].map((file) => file.filename)
-    : [];
-  const courseMainImage = req.files["courseMainImage"]
-    ? req.files["courseMainImage"][0].filename
-    : null;
-  const { id } = req.params;
-  const { mainTitle, videos, videosTitles, games, gameTitles, courseField } =
-    req.body;
-  const updateData = {
-    mainTitle,
-    videos,
-    courseField,
-    courseMainImage,
-    courseImages,
-    videosTitles,
-    games,
-    gameTitles,
-  };
   try {
+    const { id } = req.params;
+
+    let updateData = {
+      mainTitle: {
+        en: req.body.mainTitle_en,
+        ar: req.body.mainTitle_ar,
+      },
+      courseField: {
+        en: req.body.courseField_en,
+        ar: req.body.courseField_ar,
+      },
+      description: {
+        en: req.body.description_en,
+        ar: req.body.description_ar,
+      },
+    };
+
+    // Handle file uploads if present
+    if (req.files) {
+      if (req.files["courseMainImage"]) {
+        updateData.courseMainImage = req.files["courseMainImage"][0].filename;
+      }
+      if (req.files["courseImages"]) {
+        updateData.courseImages = req.files["courseImages"].map(
+          (file) => file.filename
+        );
+      }
+    }
+
+    // Handle videos and games if present
+    if (req.body.videos) {
+      updateData.videos = JSON.parse(req.body.videos).map((video) => ({
+        url: video.url,
+        title: { en: video.title_en, ar: video.title_ar },
+        description: { en: video.description_en, ar: video.description_ar },
+      }));
+    }
+
+    if (req.body.games) {
+      updateData.games = JSON.parse(req.body.games).map((game) => ({
+        url: game.url,
+        title: { en: game.title_en, ar: game.title_ar },
+        description: { en: game.description_en, ar: game.description_ar },
+      }));
+    }
+
     const updatedCourse = await Courses.findByIdAndUpdate(id, updateData, {
       new: true,
     });
-    res.status(201).json({ data: { project: updatedCourse } });
+    res.status(200).json(updatedCourse);
   } catch (e) {
-    return res.status(400).json({ error: e });
+    console.error("Error updating course:", e);
+    res.status(400).json({ error: e.message });
   }
 };
 

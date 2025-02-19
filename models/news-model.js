@@ -8,13 +8,17 @@ const newsSchema = new mongoose.Schema({
     type: String,
   },
   newsTitle: {
-    type: String,
+    en: { type: String, required: true },
+    ar: { type: String, required: true },
   },
   newsCategory: {
-    type: String,
+    en: { type: String },
+    ar: { type: String },
   },
   newsDescription: {
-    type: String,
+    en: { type: String },
+    ar: { type: String },
   },
 });
+
 module.exports = mongoose.model("news", newsSchema);

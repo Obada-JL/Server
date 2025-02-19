@@ -12,19 +12,22 @@ const getNews = async (req, res) => {
 const addNew = async (req, res) => {
   try {
     const newsImage = req.files?.["newsImage"]?.[0]?.filename || null;
-    const { newsDate, newsTitle, newsCategory, newsDescription } = req.body;
-
-    // Validate required fields
-    if (!newsTitle || !newsDate) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
 
     const newNews = new News({
       newsImage,
-      newsDate,
-      newsTitle,
-      newsCategory,
-      newsDescription,
+      newsDate: req.body.newsDate,
+      newsTitle: {
+        en: req.body.newsTitle_en,
+        ar: req.body.newsTitle_ar,
+      },
+      newsCategory: {
+        en: req.body.newsCategory_en,
+        ar: req.body.newsCategory_ar,
+      },
+      newsDescription: {
+        en: req.body.newsDescription_en,
+        ar: req.body.newsDescription_ar,
+      },
     });
 
     await newNews.save();
@@ -38,16 +41,24 @@ const addNew = async (req, res) => {
 const updateNew = async (req, res) => {
   try {
     const { id } = req.params;
-    const { newsDate, newsTitle, newsCategory, newsDescription } = req.body;
 
     let updateData = {
-      newsDate,
-      newsTitle,
-      newsCategory,
-      newsDescription,
+      newsDate: req.body.newsDate,
+      newsTitle: {
+        en: req.body.newsTitle_en,
+        ar: req.body.newsTitle_ar,
+      },
+      newsCategory: {
+        en: req.body.newsCategory_en,
+        ar: req.body.newsCategory_ar,
+      },
+      newsDescription: {
+        en: req.body.newsDescription_en,
+        ar: req.body.newsDescription_ar,
+      },
     };
 
-    if (req.files && req.files["newsImage"]) {
+    if (req.files?.["newsImage"]) {
       updateData.newsImage = req.files["newsImage"][0].filename;
     }
 
@@ -59,6 +70,7 @@ const updateNew = async (req, res) => {
     }
     res.status(200).json(updatedNews);
   } catch (e) {
+    console.error("Error updating news:", e);
     res.status(400).json({ error: e.message });
   }
 };

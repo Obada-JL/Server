@@ -36,7 +36,7 @@ const storage = multer.diskStorage({
       const safeFileName = `news-${Date.now()}${ext}`;
       cb(null, safeFileName);
     } else if (file.fieldname === "courseImages") {
-      cb(null, `${req.body.mainTitle}-${file.fieldname}${ext}`);
+      cb(null, `${Date.now()}-${req.body.mainTitle}-${file.fieldname}${ext}`);
     } else if (file.fieldname === "courseMainImage") {
       console.log(file);
       cb(null, `${file.originalname}-${file.fieldname}${ext}`); // just temporarly
@@ -48,7 +48,10 @@ const storage = multer.diskStorage({
       console.log("request body name", req.body.name);
       cb(null, `${req.body.name}-${file.fieldname}-${Date.now()}${ext}`);
     } else if (file.fieldname === "categoryImage") {
-      cb(null, `${req.body.categoryTitle}-${file.fieldname}${ext}`);
+      cb(
+        null,
+        `${Date.now()}-${req.body.categoryTitle}-${file.fieldname}${ext}`
+      );
     } else {
       cb(null, `${file.originalname}${ext}`);
     }

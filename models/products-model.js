@@ -1,24 +1,31 @@
 const mongoose = require("mongoose");
 
 const productsSchema = new mongoose.Schema({
-  mainImage: {
-    type: String,
-  },
-  sliderImages: {
-    type: [String],
-  },
+  mainImage: String,
+  sliderImages: [String],
   title: {
-    type: String,
+    en: { type: String, default: "" },
+    ar: { type: String, default: "" },
   },
   name: {
-    type: String,
+    en: { type: String, default: "" },
+    ar: { type: String, default: "" },
   },
   description: {
-    type: String,
+    en: { type: String, default: "" },
+    ar: { type: String, default: "" },
   },
-  // sort features like display  i want to see it in website
   features: {
-    type: [String],
+    type: mongoose.Schema.Types.Mixed,
+    default: {
+      dimensions: { en: "", ar: "" },
+      pageCount: { en: "", ar: "" },
+      publishingPlace: { en: "", ar: "" },
+      edition: { en: "", ar: "" },
+      publishDate: { en: "", ar: "" },
+      language: { en: "", ar: "" },
+    },
   },
 });
+
 module.exports = mongoose.model("products", productsSchema);

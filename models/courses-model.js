@@ -5,25 +5,46 @@ const coursesSchema = new mongoose.Schema({
     type: String,
   },
   mainTitle: {
-    type: String,
+    en: { type: String, required: true },
+    ar: { type: String, required: true },
   },
   courseField: {
-    type: String,
+    en: { type: String },
+    ar: { type: String },
   },
-  videos: {
-    type: [String],
+  description: {
+    en: { type: String },
+    ar: { type: String },
   },
-  videosTitles: {
-    type: [String],
-  },
-  games: {
-    type: [String],
-  },
-  gameTitles: {
-    type: [String],
-  },
+  videos: [
+    {
+      url: String,
+      title: {
+        en: String,
+        ar: String,
+      },
+      description: {
+        en: String,
+        ar: String,
+      },
+    },
+  ],
+  games: [
+    {
+      url: String,
+      title: {
+        en: String,
+        ar: String,
+      },
+      description: {
+        en: String,
+        ar: String,
+      },
+    },
+  ],
   courseImages: {
     type: [String],
   },
 });
+
 module.exports = mongoose.model("courses", coursesSchema);
