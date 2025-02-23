@@ -117,6 +117,7 @@ app.put(
   ProductsController.updateProduct
 );
 app.delete("/api/deleteProduct/:id", ProductsController.deleteProduct);
+app.get("/api/getProduct/:id", ProductsController.getProduct);
 // categorys routes
 app.get("/api/getCategorys", CategorysController.getCategorys);
 app.post("/api/addCategory", categoryUpload, CategorysController.addCategory);

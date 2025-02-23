@@ -5,6 +5,25 @@ const getProducts = async (req, res) => {
   res.json(getProducts);
 };
 
+const getProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Products.findById(id);
+    
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    res.status(500).json({ 
+      message: "Error fetching product", 
+      error: error.message 
+    });
+  }
+};
+
 const addProduct = async (req, res) => {
   try {
     console.log("Received request body:", req.body); // Debug log
@@ -138,6 +157,7 @@ const deleteProduct = async (req, res) => {
 
 module.exports = {
   getProducts,
+  getProduct,
   addProduct,
   deleteProduct,
   updateProduct,
